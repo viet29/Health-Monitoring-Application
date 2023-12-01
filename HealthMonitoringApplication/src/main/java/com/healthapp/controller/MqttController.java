@@ -17,5 +17,5 @@ public class MqttController {
     @Value("${mqtt.broker}")
     private String broker;
 
-
+    
 }
