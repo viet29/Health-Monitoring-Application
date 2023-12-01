@@ -12,8 +12,8 @@ const char *password = "29122002";
 
 // MQTT broker details
 const char *mqtt_server = "mqtt-broker-IP";
-const char *mqtt_username = "your-MQTT-username";
-const char *mqtt_password = "your-MQTT-password";
+const char *mqtt_username = "viet29";
+const char *mqtt_password = "12345";
 const char *client_id = "ESP32_Client";
 
 // Create instances for sensors
