@@ -1,11 +1,32 @@
 <!DOCTYPE html>
-<html xmlns=http://www.w3.org/1999/xhtml
-      xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Patient</title>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-
+<div class="container">
+    <div th:replace="fragments/header :: header"></div>
+    <div class="form-info">
+        <h2 class="text-center">Create Patient</h2>
+        <form th:action="@{/patient/create}" th:object="${patient}" method="post">
+            <div class="form-group ">
+                <label for="name">Họ tên</label>
+                <input type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Nhập họ tên" th:field="*{name}">
+            </div>
+            <div class="form-group">
+                <label for="dob">Ngày sinh</label>
+                <input type="date" class="form-control" id="dob" th:field="*{dob}">
+            </div>
+            <button type="submit" class="btn btn-primary">Add new</button>
+        </form>
+    </div>
+</div>
 </body>
 </html>

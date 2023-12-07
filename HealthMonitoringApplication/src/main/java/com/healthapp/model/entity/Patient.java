@@ -13,7 +13,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
+@AllArgsConstructor
 @NoArgsConstructor
 public class Patient {
     @Id

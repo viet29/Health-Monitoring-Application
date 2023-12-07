@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
+@AllArgsConstructor
 @NoArgsConstructor
 public class Examination {
     @Id
@@ -34,4 +34,6 @@ public class Examination {
     @Column(name = "exam_time")
     @CreationTimestamp
     private LocalDateTime examTime;
+
+
 }

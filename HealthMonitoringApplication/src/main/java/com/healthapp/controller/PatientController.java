@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.model.IModel;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,21 +20,22 @@ public class PatientController {
     private PatientRepository patientRepository;
 
     @GetMapping("/create")
-    public String create() {
+    public String create(Model model) {
+        model.addAttribute("patient", new Patient());
         return "patient/create";
     }
 
     @PostMapping("/create")
     public String create(@ModelAttribute Patient patient) {
         patientRepository.save(patient);
-        return "patient";
+        return "redirect:/patient/read";
     }
 
     @GetMapping
     public String read(Model model) {
         List<Patient> listOfPatients = patientRepository.findAll();
         model.addAttribute("listOfPatients", listOfPatients);
-        return "read";
+        return "patient/read";
     }
 
     @GetMapping("update/{id}")
@@ -46,10 +48,10 @@ public class PatientController {
         return "patient/update";
     }
 
-    @PostMapping("update/{id}")
-    public String update() {
-
-    }
+//    @PostMapping("update/{id}")
+//    public String update() {
+//
+//    }
 
     @ModelAttribute
     private Patient newPatient() {
