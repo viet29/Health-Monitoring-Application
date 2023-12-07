@@ -1,84 +1,144 @@
 #include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_MAX30100.h>
-#include <OneWire.h>
-#include <DallasTemperature.h>
-#include <WiFi.h>
+#include "MAX30100_PulseOximeter.h"
 #include <PubSubClient.h>
+#include <WiFi.h>
 
-// WiFi credentials
-const char *ssid = "VIET";
-const char *password = "29122002";
+#define REPORTING_PERIOD_MS     1000
 
-// MQTT broker details
-const char *mqtt_server = "mqtt-broker-IP";
-const char *mqtt_username = "viet29";
-const char *mqtt_password = "12345";
-const char *client_id = "ESP32_Client";
 
-// Create instances for sensors
-Adafruit_MAX30100 pulseOxSensor;
-OneWire oneWire(2);  // Pin 2 for DS18B20
-DallasTemperature sensors(&oneWire);
+const char* ssid = "cunco";
+const char* password = "0919468995";
+const char* mqtt_server = "broker.hivemq.com";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-void setup() {
-  Serial.begin(115200);
+// Create a PulseOximeter object
+PulseOximeter pox;
 
-  // Connect to Wi-Fi
-  WiFi.begin(ssid, password);
+// Time at which the last beat occurred
+uint32_t tsLastReport = 0;
+
+// Callback routine is executed when a pulse is detected
+void onBeatDetected() {
+    Serial.println("♥ Beat!");
+}
+
+void setup_wifi() { 
+  delay(10);
+  // We start by connecting to a WiFi network
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  WiFi.mode(WIFI_STA); 
+  WiFi.begin(ssid, password); 
+
   while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.println("Connecting to WiFi...");
+    delay(500);
+    Serial.print(".");
   }
-  Serial.println("Connected to WiFi");
 
-  // Connect to MQTT broker
-  client.setServer(mqtt_server, 1883);
+  randomSeed(micros());
+
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+void callback(char* topic, byte* payload, unsigned int length) {
+  String temp; 
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
+  for (int i = 0; i < length; i++) { 
+    //Serial.print((char)payload[i]);
+    temp += (char)payload[i];
+  }
+  Serial.println(temp);
+
+  // // Switch on the LED if temprature > 20
+  // if (topic == "/PTIT_Test/p/temp")
+  //   if (temp.toInt() < 20 ) {
+  //     digitalWrite(2, LOW);  
+  //   } else {
+  //     digitalWrite(2, HIGH);
+  //   }
+}
+
+void reconnect() { 
+  // Loop until we're reconnected
   while (!client.connected()) {
-    Serial.println("Connecting to MQTT...");
-    if (client.connect(client_id, mqtt_username, mqtt_password)) {
-      Serial.println("Connected to MQTT");
+    Serial.print("Attempting MQTT connection...");
+    String clientId = "ESP32Client-";
+    clientId += String(random(0xffff), HEX);
+    // Attempt to connect
+    if (client.connect(clientId.c_str())) {
+      Serial.println("Connected to " + clientId);
+      // Once connected, publish an announcement...
+      client.publish("/PTIT_Test/p/mqtt", "PTIT_Test"); 
+      // ... and resubscribe
+      //client.subscribe("/PTIT_Test/p/mqtt"); 
+      //client.subscribe("/PTIT_Test/p/temp");
+      //client.subscribe("/PTIT_Test/p/hum");
     } else {
-      Serial.print("Failed, rc=");
-      Serial.println(client.state());
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      // Wait 5 seconds before retrying
       delay(2000);
     }
   }
+}
 
-  // Initialize sensors
-  if (!pulseOxSensor.begin()) {
-    Serial.println("MAX30100 not found. Please check wiring/power.");
-    while (1);
+void setup_sensor() {
+  // Initialize sensor
+  if (!pox.begin()) {
+      Serial.println("MAX30100 INITIALIZED FAILED");
+      for(;;);
+  } else {
+      Serial.println("MAX30100 INITIALIZED SUCCESS");
+      // Register a callback routine
+      pox.setOnBeatDetectedCallback(onBeatDetected);
   }
+  // Configure sensor to use 7.6mA for LED drive
+  pox.setIRLedCurrent(MAX30100_LED_CURR_7_6MA);
+}
 
-  sensors.begin();
+void setup() {
+    Serial.begin(115200);
+    Serial.print("Initializing pulse oximeter..");
+    setup_wifi(); 
+    client.setServer(mqtt_server, 1883); 
+    client.setCallback(callback); 
+    setup_sensor();
 }
 
 void loop() {
-  // Read sensor values
-  // float spo2 = pulseOxSensor.getSpO2();
-  // float bloodPressure = pulseOxSensor.getBloodPressure();
-  
-  // sensors.requestTemperatures();
-  // float temperature = sensors.getTempCByIndex(0);
+  if (!client.connected()) {
+    reconnect();
+  }
+  client.loop();
 
-  float spo2 = random(10);
-  float bloodPressure = random(100);
-  float temperature = random(100);
+  // Read from the sensor
+  pox.update();
+  float BPM = pox.getHeartRate();
+  float SpO2 = pox.getSpO2();
+  // Grab the updated heart rate and SpO2 levels
+  if (millis() - tsLastReport > REPORTING_PERIOD_MS) {
+      Serial.print("Heart rate:");
+      Serial.print(BPM);
+      Serial.print("bpm / SpO2:");
+      Serial.print(SpO2);
+      Serial.println("%");
+      Serial.println("*********************************");
+      Serial.println();
 
-  // Publish values to MQTT
-  char topic[50];
-  snprintf(topic, sizeof(topic), "esp32/%s/spo2", client_id);
-  client.publish(topic, String(spo2).c_str());
-
-  snprintf(topic, sizeof(topic), "esp32/%s/blood_pressure", client_id);
-  client.publish(topic, String(bloodPressure).c_str());
-
-  snprintf(topic, sizeof(topic), "esp32/%s/temperature", client_id);
-  client.publish(topic, String(temperature).c_str());
-
-  delay(5000);  // Adjust delay as needed
+      String bpm = String(BPM, 2);
+      String spo2 = String(SpO2, 2);
+      client.publish("/Health/bpm", bpm.c_str()); 
+      client.publish("/Health/spo2", spo2.c_str());
+      tsLastReport = millis();
+  }
 }

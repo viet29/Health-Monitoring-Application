@@ -1,17 +1,11 @@
 <!DOCTYPE html>
-<html xmlns=http://www.w3.org/1999/xhtml
-      xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Arduino and ESP32 Websocket</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'/>
-    <meta charset='UTF-8'>
-    <style> body { background-color: #E6D8D5; text-align: center; } </style>
-</head>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
 <body>
-<h1>Temperature: <span id='temp' th:text="${temp}">-</span></h1>
-<h1>Humidity: <span id='hum'>-</span></h1>
-<h1>Received message: <span id='message'>-</span></h1>
-<button type='button' id='BTN_1'> <h1>ON</h1> </button>
-<button type='button' id='BTN_2'> <h1>OFF</h1> </button>
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="container">
+
+</div>
 </body>
 </html>

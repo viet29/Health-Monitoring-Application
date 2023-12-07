@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+<body>
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="container">
+    <h2 class="text-center">Thông tin bệnh nhân</h2>
+    <div class="content">
+        <div class="avatar">
+            <img src="https://img5.thuthuatphanmem.vn/uploads/2021/12/28/anh-conan-cool-ngau_093000879.jpg"
+                 alt="Avatar">
+        </div>
+        <div class="patient-info">
+            <p>ID: <span th:text="${patient.id}"></span></p>
+            <p>Họ tên: <span th:text="${patient.name}"></span></p>
+            <p>Ngày sinh: <span th:text="${#temporals.format(patient.dob, 'dd-MM-yyyy')}"></span></p>
+            <p>Ngày tạo: <span th:text="${#temporals.format(patient.createdAt, 'dd-MM-yyyy hh:mm')}"></span></p>
+        </div>
+    </div>
+    <div class="mt-5"><a class="btn btn-primary" th:href="@{{id}/create (id = ${patient.id})}">Thêm lần khám</a> </div>
+    <div class="patient-table mt-2">
+        <table class="table table-striped">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">Mã khám bệnh</th>
+                <th scope="col">Nhiệt độ (&deg;C)</th>
+                <th scope="col">Nồng độ Oxy (SpO2)</th>
+                <th scope="col">Nhịp tim (Bpm)</th>
+                <th scope="col">Thời gian</th>
+                <th scope="col">Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="e : ${patient.examinations}">
+                <td th:text="${e.id}"></td>
+                <td th:text="${e.temperature}"></td>
+                <td th:text="${e.spO2}"></td>
+                <td th:text="${e.heartRate}"></td>
+                <td th:text="${#temporals.format(e.examTime, 'dd-MM-yyyy hh:mm')}"></td>
+                <td>
+                    <a class="btn btn-danger">Xoá</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

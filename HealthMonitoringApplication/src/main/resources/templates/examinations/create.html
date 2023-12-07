@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+<body>
+<div th:replace="~{fragments/header :: navbar}"></div>
+<div class="container">
+    <h2 class="text-center">Thông tin bệnh nhân</h2>
+    <div class="content">
+        <div class="avatar">
+            <img src="https://img5.thuthuatphanmem.vn/uploads/2021/12/28/anh-conan-cool-ngau_093000879.jpg"
+                 alt="Avatar">
+        </div>
+        <div class="patient-info">
+            <p>Mã bệnh nhân: <span th:text="${patient.id}"></span></p>
+            <p>Họ tên: <span th:text="${patient.name}"></span></p>
+            <p>Ngày sinh: <span th:text="${#temporals.format(patient.dob, 'dd-MM-yyyy')}"></span></p>
+            <p>Ngày tạo: <span th:text="${#temporals.format(patient.createdAt, 'dd-MM-yyyy hh:mm')}"></span></p>
+        </div>
+    </div>
+    <h3>Kết quả lần đo: </h3>
+    <p>Nhịp tim: <span th:text="${bpm}"></span></p>
+    <p>Nồng độ máu: <span th:text="${spo2}"></span></p>
+    <p>Nhiệt độ: <span th:text="${temp}"></span></p>
+    <form method="post" th:action="@{/exam/{id}/create (id = ${patient.id})}">
+        <input type="hidden" th:value="${bpm}" name="bpm" />
+        <input type="hidden" th:value="${spo2}" name="spo2" />
+        <input type="hidden" th:value="${temp}" name="temp" />
+        <button type="submit" class="btn btn-primary">Lưu</button> &nbsp;
+        <a th:href="@{/exam/{id} (id = ${patient.id})}">Quay lại</a>
+    </form>
+</div>
+</body>
+</html>
