@@ -51,6 +51,11 @@
         .patient-info span {
             font-weight: bold;
         }
+        .new-examination{
+            margin-left: 0;
+        }
+
+
     </style>
 </head>
 
@@ -70,7 +75,10 @@
             <p>Created At: <span th:text="${patient.createdAt}"></span></p>
         </div>
     </div>
-    <div class="patient-table mt-5">
+    <div class="new-examination mt-5">
+        <input type="button" class="btn btn-primary offset-11 col-1" value="Thêm mới">
+    </div>
+    <div class="patient-table mt-2">
         <table class="table table-striped">
             <thead class="thead-light">
             <tr>
@@ -83,16 +91,16 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="patient : ${listOfPatients}">
-                <td th:text="${patient.id}"></td>
-                <td th:text="${patient.name}"></td>
-                <td th:text="${patient.dob}"></td>
-                <td th:text="${patient.createdAt}"></td>
-                <td th:text="${patient.createdAt}"></td>
+            <tr th:each="examination : ${patient.examinations}">
+                <td th:text="${examination.id}"></td>
+                <td th:text="${examination.temperature}"></td>
+                <td th:text="${examination.spO2}"></td>
+                <td th:text="${examination.heartRate}"></td>
+                <td th:text="${examination.examTime}"></td>
 
                 <td>
                     <input class="btn btn-danger" type="button" value="Delete">
-                    <input class="btn btn-warning" type="button" value="Detail">
+<!--                    <input class="btn btn-warning" type="button" value="Detail">-->
                 </td>
             </tr>
             </tbody>

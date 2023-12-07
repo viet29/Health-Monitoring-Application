@@ -7,48 +7,50 @@
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
           crossorigin="anonymous">
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/patient.css">
 </head>
 <body>
-    <div th:replace="fragments/header :: header"></div>
+    <div class="container">
+        <div th:replace="fragments/header :: header"></div>
 
-    <div class="patient-table">
-        <div class="head-table">
-            <div class="search-bar">
-                <input type="text" class="form-control" placeholder="Nhập từ khóa vào đây">
-                <input class="btn btn-success" type="button" value="Tìm kiếm">
+        <div class="patient-table mt-3">
+            <div class="head-table">
+                <div class="search-bar">
+                    <input type="text" class="form-control" placeholder="Nhập từ khóa vào đây">
+                    <input class="btn btn-success" type="button" value="Tìm kiếm">
+                </div>
+
+                <div class="new-patient">
+                    <a th:href="@{/patient/create}" class="btn btn-primary">Thêm mới</a>
+                </div>
+
             </div>
 
-            <div class="new-patient">
-                <input type="button" class="btn btn-primary" value="Thêm mới">
-            </div>
+            <table class="table table-striped mt-3">
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Date Of Birth</th>
+                    <th scope="col">Created At</th>
+                    <th scope="col">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="patient : ${listOfPatients}">
+                    <td th:text="${patient.id}"></td>
+                    <td th:text="${patient.name}"></td>
+                    <td th:text="${patient.dob}"></td>
+                    <td th:text="${patient.createdAt}"></td>
+
+                    <td>
+                        <input class="btn btn-danger" type="button" value="Delete">
+                        <input class="btn btn-warning" type="button" value="Detail">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
-
-        <table class="table table-striped">
-            <thead class="thead-light">
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Name</th>
-                <th scope="col">Date Of Birth</th>
-                <th scope="col">Created At</th>
-                <th scope="col">Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="patient : ${listOfPatients}">
-                <td th:text="${patient.id}"></td>
-                <td th:text="${patient.name}"></td>
-                <td th:text="${patient.dob}"></td>
-                <td th:text="${patient.createdAt}"></td>
-
-                <td>
-                    <input class="btn btn-danger" type="button" value="Delete">
-                    <input class="btn btn-warning" type="button" value="Detail">
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
 </div>
 </body>
 </html>
