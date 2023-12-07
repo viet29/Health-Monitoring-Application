@@ -1,9 +1,8 @@
 package com.healthapp.controller;
 
 import com.healthapp.config.Mqtt;
-import com.healthapp.model.DTO.MqttPublishModel;
-import com.healthapp.model.DTO.MqttSubscribeModel;
-import org.eclipse.paho.client.mqttv3.MqttException;
+import com.healthapp.model.mqtt.MqttPublishModel;
+import com.healthapp.model.mqtt.MqttSubscribeModel;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;

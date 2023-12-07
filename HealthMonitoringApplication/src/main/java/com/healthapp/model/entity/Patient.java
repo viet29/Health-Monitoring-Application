@@ -1,4 +1,4 @@
-package com.healthapp.model;
+package com.healthapp.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

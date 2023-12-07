@@ -1,4 +1,4 @@
-package com.healthapp.model;
+package com.healthapp.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,8 +28,8 @@ public class Examination {
     @Column(name = "spo2")
     private Float spO2;
 
-    @Column(name = "blood_pressure")
-    private Float bloodPressure;
+    @Column(name = "heart_rate")
+    private Float heartRate;
 
     @Column(name = "exam_time")
     @CreationTimestamp
