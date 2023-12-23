@@ -116,11 +116,6 @@ void loop() {
   float SpO2 = pox.getSpO2();
   DS18B20.requestTemperatures(); 
   float tempC = DS18B20.getTempCByIndex(0);
-
-  int randomInt = random(1001);
-  tempC = map(randomInt, 0, 1000, 360, 405) / 10.0;
-  BPM = map(randomInt, 0, 1000, 600, 1350) / 10.0;
-  SpO2 = map(randomInt, 0, 1000, 750, 990) / 10.0;
   
   if (millis() - tsLastReport > REPORTING_PERIOD_MS) {
       Serial.print("Heart rate:");
