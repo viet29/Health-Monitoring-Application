@@ -15,7 +15,7 @@
             <p>ID: <span th:text="${patient.id}"></span></p>
             <p>Họ tên: <span th:text="${patient.name}"></span></p>
             <p>Ngày sinh: <span th:text="${#temporals.format(patient.dob, 'dd-MM-yyyy')}"></span></p>
-            <p>Ngày tạo: <span th:text="${#temporals.format(patient.createdAt, 'dd-MM-yyyy hh:mm')}"></span></p>
+            <p>Ngày tạo: <span th:text="${#temporals.format(patient.createdAt, 'dd-MM-yyyy HH:mm')}"></span></p>
         </div>
     </div>
     <div class="mt-5"><a class="btn btn-primary" th:href="@{{id}/create (id = ${patient.id})}">Thêm lần khám</a> </div>
@@ -28,6 +28,7 @@
                 <th scope="col">Nồng độ Oxy (SpO2)</th>
                 <th scope="col">Nhịp tim (Bpm)</th>
                 <th scope="col">Thời gian</th>
+                <th scope="col">Xác suất</th>
                 <th scope="col">Hành động</th>
             </tr>
             </thead>
@@ -38,8 +39,9 @@
                 <td th:text="${e.spO2}"></td>
                 <td th:text="${e.heartRate}"></td>
                 <td th:text="${#temporals.format(e.examTime, 'dd-MM-yyyy hh:mm')}"></td>
+                <td th:text="${#numbers.formatDecimal(e.result * 100, 0, 'COMMA', 2, 'POINT')} + '%'"></td>
                 <td>
-                    <a class="btn btn-danger">Xoá</a>
+                    <a class="btn btn-danger" th:href="@{/exam/{id}/delete/{id2} (id = ${patient.id}, id2 = ${e.id})}">Xoá</a>
                 </td>
             </tr>
             </tbody>

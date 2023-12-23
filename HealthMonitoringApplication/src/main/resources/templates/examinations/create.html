@@ -21,10 +21,24 @@
     <p>Nhịp tim: <span th:text="${bpm}"></span></p>
     <p>Nồng độ máu: <span th:text="${spo2}"></span></p>
     <p>Nhiệt độ: <span th:text="${temp}"></span></p>
+    <p>Xác suất: <span th:text="${#numbers.formatDecimal(result * 100, 0, 'COMMA', 2, 'POINT')} + '%'"></span></p>
+    <div th:if="${result < 0}">
+        <div class="alert alert-danger">Dữ liệu lỗi, xin thử lại!</div>
+    </div>
+    <div th:if="${result < 0.3 && result >= 0}">
+        <div class="alert alert-success">Cơ thể bạn hoàn toàn bình thường!</div>
+    </div>
+    <div th:if="${result >= 0.3 && result < 0.65}">
+        <div class="alert alert-info">Bạn có nguy cơ mắc bệnh!</div>
+    </div>
+    <div th:if="${result >= 0.65}">
+        <div class="alert alert-warning">Bạn có nguy cơ cao!</div>
+    </div>
     <form method="post" th:action="@{/exam/{id}/create (id = ${patient.id})}">
         <input type="hidden" th:value="${bpm}" name="bpm" />
         <input type="hidden" th:value="${spo2}" name="spo2" />
         <input type="hidden" th:value="${temp}" name="temp" />
+        <input type="hidden" th:value="${result}" name="result" />
         <button type="submit" class="btn btn-primary">Lưu</button> &nbsp;
         <a th:href="@{/exam/{id} (id = ${patient.id})}">Quay lại</a>
     </form>

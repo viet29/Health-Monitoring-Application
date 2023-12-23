@@ -1,10 +1,15 @@
 #include <Wire.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
 #include "MAX30100_PulseOximeter.h"
 #include <PubSubClient.h>
 #include <WiFi.h>
 
 #define REPORTING_PERIOD_MS     1000
+#define ONE_WIRE_BUS 25 // DS18B20 on arduino pin25 corresponds to D25 on ESP32
 
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature DS18B20(&oneWire);
 
 const char* ssid = "cunco";
 const char* password = "0919468995";
@@ -53,18 +58,9 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print(topic);
   Serial.print("] ");
   for (int i = 0; i < length; i++) { 
-    //Serial.print((char)payload[i]);
     temp += (char)payload[i];
   }
   Serial.println(temp);
-
-  // // Switch on the LED if temprature > 20
-  // if (topic == "/PTIT_Test/p/temp")
-  //   if (temp.toInt() < 20 ) {
-  //     digitalWrite(2, LOW);  
-  //   } else {
-  //     digitalWrite(2, HIGH);
-  //   }
 }
 
 void reconnect() { 
@@ -76,17 +72,11 @@ void reconnect() {
     // Attempt to connect
     if (client.connect(clientId.c_str())) {
       Serial.println("Connected to " + clientId);
-      // Once connected, publish an announcement...
       client.publish("/PTIT_Test/p/mqtt", "PTIT_Test"); 
-      // ... and resubscribe
-      //client.subscribe("/PTIT_Test/p/mqtt"); 
-      //client.subscribe("/PTIT_Test/p/temp");
-      //client.subscribe("/PTIT_Test/p/hum");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
       Serial.println(" try again in 5 seconds");
-      // Wait 5 seconds before retrying
       delay(2000);
     }
   }
@@ -99,11 +89,10 @@ void setup_sensor() {
       for(;;);
   } else {
       Serial.println("MAX30100 INITIALIZED SUCCESS");
-      // Register a callback routine
       pox.setOnBeatDetectedCallback(onBeatDetected);
   }
-  // Configure sensor to use 7.6mA for LED drive
   pox.setIRLedCurrent(MAX30100_LED_CURR_7_6MA);
+  DS18B20.begin();
 }
 
 void setup() {
@@ -125,20 +114,31 @@ void loop() {
   pox.update();
   float BPM = pox.getHeartRate();
   float SpO2 = pox.getSpO2();
-  // Grab the updated heart rate and SpO2 levels
+  DS18B20.requestTemperatures(); 
+  float tempC = DS18B20.getTempCByIndex(0);
+
+  int randomInt = random(1001);
+  tempC = map(randomInt, 0, 1000, 360, 405) / 10.0;
+  BPM = map(randomInt, 0, 1000, 600, 1350) / 10.0;
+  SpO2 = map(randomInt, 0, 1000, 750, 990) / 10.0;
+  
   if (millis() - tsLastReport > REPORTING_PERIOD_MS) {
       Serial.print("Heart rate:");
       Serial.print(BPM);
       Serial.print("bpm / SpO2:");
       Serial.print(SpO2);
-      Serial.println("%");
-      Serial.println("*********************************");
+      Serial.print("% / Temp:");
+      Serial.print(tempC);
+      Serial.println("C");
+      Serial.println("*******************************");
       Serial.println();
 
       String bpm = String(BPM, 2);
       String spo2 = String(SpO2, 2);
-      client.publish("/Health/bpm", bpm.c_str()); 
-      client.publish("/Health/spo2", spo2.c_str());
+      String temp = String(tempC, 2);
+
+      String res = bpm + "|" + spo2 + "|" + temp;
+      client.publish("/Health/data", res.c_str());
       tsLastReport = millis();
   }
 }

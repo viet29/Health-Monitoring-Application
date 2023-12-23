@@ -8,10 +8,12 @@
 <div class="container">
     <div class="patient-table">
         <div class="head-table">
-            <div class="search-bar">
-                <input type="text" class="form-control" placeholder="Điền mã bệnh nhân" />
-                <input class="btn btn-success" type="button" value="Tìm kiếm">
-            </div>
+            <form class="search-bar" method="get" th:action="@{/patient}">
+                <label>
+                    <input type="text" class="form-control" placeholder="Điền mã bệnh nhân" name="patientId" />
+                </label>
+                <input class="btn btn-success" type="submit" value="Tìm kiếm">
+            </form>
 
             <div class="new-patient">
                 <a  class="btn btn-primary" th:href="@{/patient/create}">Thêm mới</a>
@@ -33,10 +35,14 @@
                 <td th:text="${patient.id}"></td>
                 <td th:text="${patient.name}"></td>
                 <td th:text="${#temporals.format(patient.dob, 'dd-MM-yyyy')}"></td>
-                <td th:text="${#temporals.format(patient.createdAt, 'dd-MM-yyyy hh:mm')}"></td>
+                <td th:text="${#temporals.format(patient.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
                 <td>
                     <a class="btn btn-warning" th:href="@{/exam/{id}(id = ${patient.id})}">Chi tiết</a>
-                    <a class="btn btn-danger">Xoá</a>
+                    <form method="post" th:action="@{/patient/delete/{id} (id = ${patient.id})}"
+                          th:data-confirm-delete="|Bạn có chắc muốn xoá bệnh nhân ${patient.name}?|"
+                          onclick="return confirm(this.getAttribute('data-confirm-delete'));">
+                        <button type="submit" class="btn btn-danger">Xoá</button>
+                    </form>
                 </td>
             </tr>
             </tbody>

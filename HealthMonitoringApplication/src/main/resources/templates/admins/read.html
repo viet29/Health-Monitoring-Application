@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="container">
+    <div class="patient-table">
+        <div class="head-table">
+            <div class="new-patient">
+                <a  class="btn btn-primary" th:href="@{/admin/create}">Thêm mới</a>
+            </div>
+        </div>
+
+        <table class="table table-striped">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">Mã nhân viên</th>
+                <th scope="col">Họ tên</th>
+                <th scope="col">Vai trò</th>
+                <th scope="col">Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="admin : ${admins}">
+                <td th:text="${admin.id}"></td>
+                <td th:text="${admin.fullName}"></td>
+                <td th:text="${#strings.arrayJoin(admin.roles, ', ')}"></td>
+                <td>
+                    <a class="btn btn-warning" th:href="@{/admin/{id}(id = ${admin.id})}">Chi tiết</a>
+                    <form method="post" th:action="@{/admin/delete/{id} (id = ${admin.id})}"
+                          th:data-confirm-delete="|Bạn có chắc muốn xoá bác sĩ ${admin.fullName}?|"
+                          onclick="return confirm(this.getAttribute('data-confirm-delete'));">
+                        <button type="submit" class="btn btn-danger">Xoá</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

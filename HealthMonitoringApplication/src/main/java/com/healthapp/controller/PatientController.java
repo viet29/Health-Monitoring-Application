@@ -40,20 +40,35 @@ public class PatientController {
     }
 
     @GetMapping
-    public String read(Model model) {
-        List<Patient> listOfPatients = patientRepository.findAll();
+    public String read(Model model, @RequestParam(required = false) String patientId) {
+        List<Patient> listOfPatients;
+        if (patientId != null) {
+            listOfPatients = patientRepository.findAllByIdContaining(patientId);
+        } else {
+            listOfPatients = patientRepository.findAll();
+        }
         model.addAttribute("listOfPatients", listOfPatients);
         return "patients/read";
     }
 
-    @GetMapping("update/{id}")
+    @GetMapping("/update/{id}")
     public String update(@PathVariable String id, Model model) {
-        Optional<Patient> patient = patientRepository.findById(UUID.fromString(id));
-        if(patient.isEmpty()) {
-            return "error/notfound";
+        Optional<Patient> p = patientRepository.findById(id);
+        if(p.isEmpty()) {
+            return "errors/notfound";
         }
-        model.addAttribute("patient", patient.get());
+        model.addAttribute("patient", p.get());
         return "patients/update";
+    }
+
+    @PostMapping("/delete/{id}")
+    public String delete (Model model, @PathVariable String id){
+        Optional<Patient> p = patientRepository.findById(id);
+        if(p.isEmpty()) {
+            return "errors/notfound";
+        }
+        patientRepository.delete(p.get());
+        return "redirect:/patient";
     }
 
     @ModelAttribute

@@ -34,4 +34,7 @@ public class Examination {
     @Column(name = "exam_time")
     @CreationTimestamp
     private LocalDateTime examTime;
+
+    @Column(name = "result")
+    private Float result;
 }

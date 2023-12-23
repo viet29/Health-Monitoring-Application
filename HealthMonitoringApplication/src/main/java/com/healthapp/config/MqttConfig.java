@@ -21,12 +21,14 @@ public class MqttConfig {
 
             if (!mqttClient.isConnected()) {
                 mqttClient.connect(options);
-                System.out.println("Initialize success!");
             }
+            System.out.println("MQTT protocol initialized success!");
         } catch (MqttException e) {
-            System.err.println(e.getMessage());
+            System.err.println("MQTT protocol initialized error: " + e.getMessage());
         }
 
         return mqttClient;
     }
+
+
 }

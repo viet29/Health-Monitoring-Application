@@ -1,5 +1,6 @@
 package com.healthapp.model.entity;
 
+import com.healthapp.helper.ObjectUtils;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -7,7 +8,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Table(name = "patient")
 @Entity
@@ -17,9 +17,8 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Patient {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", nullable = false)
-    private UUID id;
+    @Column(name = "id", nullable = false, updatable = false, unique = true)
+    private String id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -31,6 +30,14 @@ public class Patient {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Examination> examinations;
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
+    @PrePersist
+    public void prePersist() {
+        id = ObjectUtils.getRandomUUID();
+    }
 }

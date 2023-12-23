@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns="http://www.w3.org/1999/xhtml">
 <head th:replace="~{fragments/header :: head}"></head>
 <body>
 <div th:replace="~{fragments/header :: navbar}"></div>
 
 <div class="container">
-
+    <th:block sec:authorize="isAuthenticated()">
+        <span sec:authentication="principal.username"></span>
+        <span sec:authentication="principal.authorities"></span>
+    </th:block>
 </div>
 </body>
 </html>

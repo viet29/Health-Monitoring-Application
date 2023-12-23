@@ -27,7 +27,7 @@ public class MqttController {
         this.mqttClient = mqttClient;
     }
 
-    @PostMapping("publish")
+    @PostMapping("/publish")
     public void publishMessage(@RequestBody @Valid MqttPublishModel messagePublishModel,
                                BindingResult bindingResult) throws org.eclipse.paho.client.mqttv3.MqttException {
         if (bindingResult.hasErrors()) {
@@ -41,12 +41,12 @@ public class MqttController {
         mqttClient.publish(messagePublishModel.getTopic(), mqttMessage);
     }
 
-    @GetMapping("subscribe")
+    @GetMapping("/subscribe")
     public List<MqttSubscribeModel> subscribeChannel(@RequestParam(value = "topic") String topic,
                                                      @RequestParam(value = "wait_millis") Integer waitMillis) {
         List<MqttSubscribeModel> messages = new ArrayList<>();
         try {
-            CountDownLatch countDownLatch = new CountDownLatch(10);
+            CountDownLatch countDownLatch = new CountDownLatch(100);
             mqttClient.subscribeWithResponse(topic, (s, mqttMessage) -> {
                 MqttSubscribeModel mqttSubscribeModel = new MqttSubscribeModel();
                 mqttSubscribeModel.setId(mqttMessage.getId());
@@ -58,6 +58,7 @@ public class MqttController {
             countDownLatch.await(waitMillis, TimeUnit.MILLISECONDS);
         } catch (org.eclipse.paho.client.mqttv3.MqttException e) {
             System.err.println("Error 1: " + e.getMessage());
+            e.printStackTrace();
         } catch (InterruptedException e) {
             System.err.println("Error 2: " + e.getMessage());
         }
